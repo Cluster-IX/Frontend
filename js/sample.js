@@ -1,3 +1,7 @@
+// TODO: search nama
+// TODO: Benerin count
+// TODO: tambah nrp
+
 $(function () {
   var mapel = [
     { nama: "", id: 0 },
@@ -11,24 +15,42 @@ $(function () {
   ];
 
   $("#jsGrid").jsGrid({
-    height: "70%",
+
+    height: "80%",
     width: "100%",
     filtering: true,
     sorting: true,
     paging: true,
     autoload: true,
-    pageSize: 10,
+    pageSize: 20,
+    pageIndex: 1,
+    pageLoading: true,
     pageButtonCount: 3,
+    pagerContainer: $("#pager"),
     controller: {
       loadData: function (filter) {
-        return $.ajax({
-          type: "GET",
-          url: "http://localhost:3000/skor",
-          data: filter,
+        const query = { ...filter };
+
+        query.page = filter.pageIndex;
+        query.count = filter.pageSize;
+
+        delete query.pageIndex;
+        delete query.pageSize;
+
+        return $.get("http://localhost:3000/skor", query).then(({data, total}) => {
+          const result = {
+            data: data || [],
+            // itemsCount: response.length || 0,
+            itemsCount: total || 0,
+          };
+
+          return result;
         });
       },
     },
+
     fields: [
+      { name: "nrp", title: "NRP", type: "text", width: 50 },
       { name: "nama", title: "Nama Siswa", type: "text", width: 150 },
       {
         name: "id_mapel",
