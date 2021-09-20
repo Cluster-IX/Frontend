@@ -36,3 +36,9 @@ a {
   justify-content: center;
   align-items: center;
 }
+
+#pager {
+  justify-content: center;
+  display: flex;
+}
+
