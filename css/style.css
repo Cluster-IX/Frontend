@@ -33,6 +33,19 @@ a {
   color: #00B7FF;
 }
 
+#count-container{
+  display:flex;
+  margin: 1rem;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#count {
+  font-weight: bold;
+}
+
 .header {
   margin: 2rem 0;
   display: flex;

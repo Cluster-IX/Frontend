@@ -1,5 +1,13 @@
 // TODO: Benerin count
 
+async function updateCount(query) {
+  $.get("http://localhost:3000/skor/count", query).then((data) => {
+    // console.log(data)
+    $("#count-container").css("display", "flex");
+    $("#count").text(data.totalResult.toLocaleString());
+  });
+}
+
 $(function () {
   const mapel = [
     { nama: "", id: null },
@@ -79,20 +87,20 @@ $(function () {
     // pagerFormat: "Pages: {first} {prev} {pages} {next} {last}    {pageIndex} of {pageCount}",
     pagerFormat: "Pages: {first} {prev} {pages} {next}",
     controller: {
-      loadData: function (filter) {
+      loadData: async (filter) => {
         const query = { ...filter };
 
         query.page = filter.pageIndex;
-        query.count = filter.pageSize;
-
         delete query.pageIndex;
+
+        query.count = filter.pageSize;
         delete query.pageSize;
 
+        updateCount(query);
         return $.get("http://localhost:3000/skor", query).then(
           ({ data, total }) => {
             const result = {
               data: appendKota(data) || [],
-              // data: data || [],
               // itemsCount: total || 0,
               itemsCount: 3500000,
             };
@@ -104,36 +112,46 @@ $(function () {
     },
 
     fields: [
-      { name: "nrp", css: "nrp_field", title: "NRP", type: "text", width: 50 },
+      {
+        name: "nrp",
+        css: "nrp_field",
+        sorting: false,
+        title: "NRP",
+        type: "text",
+        width: 10,
+      },
       {
         name: "nama",
         css: "nama_field",
+        sorting: false,
         title: "Nama Siswa",
         type: "text",
-        width: 150,
+        width: 50,
       },
       {
         name: "id_kota",
+        align: "left",
+        css: "kota_field",
+        sorting: false,
+        items: kota,
+        textField: "nama",
         title: "Kota",
         type: "select",
-        css: "kota_field",
-        items: kota,
-        align: "left",
         valueField: "id",
-        textField: "nama",
         width: 20,
       },
       {
         name: "id_mapel",
+        align: "left",
+        items: mapel,
+        sorting: false,
+        textField: "nama",
         title: "Mata Pelajaran",
         type: "select",
-        items: mapel,
-        align: "left",
         valueField: "id",
-        textField: "nama",
         width: 20,
       },
-      { name: "skor", title: "Skor", type: "text", width: 10 },
+      { name: "skor", align: "center", title: "Skor", type: "text", width: 10 },
       // { type: "control" },
     ],
   });
@@ -158,5 +176,4 @@ $(function () {
     fields.nrp.val("");
     fields.nama.val("");
   });
-
 });
