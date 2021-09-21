@@ -1,7 +1,4 @@
-// DONE: search nama
-// DONE: tambah nrp
 // TODO: Benerin count
-// TODO: alert when choosing nrp and kota
 
 $(function () {
   const mapel = [
@@ -79,6 +76,8 @@ $(function () {
     pageLoading: true,
     pageButtonCount: 3,
     pagerContainer: $("#pager"),
+    // pagerFormat: "Pages: {first} {prev} {pages} {next} {last}    {pageIndex} of {pageCount}",
+    pagerFormat: "Pages: {first} {prev} {pages} {next}",
     controller: {
       loadData: function (filter) {
         const query = { ...filter };
@@ -91,14 +90,11 @@ $(function () {
 
         return $.get("http://localhost:3000/skor", query).then(
           ({ data, total }) => {
-            // console.log(appendKota(data))
-            // console.log(data)
-
             const result = {
               data: appendKota(data) || [],
               // data: data || [],
-              // itemsCount: response.length || 0,
-              itemsCount: total || 0,
+              // itemsCount: total || 0,
+              itemsCount: 3500000,
             };
 
             return result;
@@ -109,7 +105,13 @@ $(function () {
 
     fields: [
       { name: "nrp", css: "nrp_field", title: "NRP", type: "text", width: 50 },
-      { name: "nama", title: "Nama Siswa", type: "text", width: 150 },
+      {
+        name: "nama",
+        css: "nama_field",
+        title: "Nama Siswa",
+        type: "text",
+        width: 150,
+      },
       {
         name: "id_kota",
         title: "Kota",
@@ -136,26 +138,25 @@ $(function () {
     ],
   });
 
-  // let lock = false
-  function alertSingleField() {
-    alert("Hanya bisa memilih salah satu filter (NRP atau Kota)");
-  }
+  const fields = {
+    nrp: $(".nrp_field > input"),
+    kota: $(".kota_field > select"),
+    nama: $(".nama_field > input"),
+  };
 
-  $(".nrp_field > input").bind("change keyup", () => {
-    // console.log($(".nrp_field > input").val())
-    //TODO: change selected on nrp type
-     $(".kota_field > select").val()
-    const val = $(".nrp_field > input").val()
-    if(val){
-      // $(".kota_field > select").prop("disabled", true);
-
-    }
+  fields.nrp.bind("change keyup", () => {
+    fields.kota.prop("selectedIndex", 0);
+    fields.nama.val("");
   });
 
-  // $(".kota_field > select").bind("change", () => {
-  $(".kota_field > select").bind("click", () => {
-    $(".nrp_field > input").val("")
-    // console.log($(".kota_field > select").val(0));
-    // $("#grid").jsGrid("reset");
+  fields.nama.bind("change keyup", () => {
+    fields.kota.prop("selectedIndex", 0);
+    fields.nrp.val("");
   });
+
+  fields.kota.bind("click", () => {
+    fields.nrp.val("");
+    fields.nama.val("");
+  });
+
 });
